@@ -1,0 +1,44 @@
+# Gera module.zip e module.json e anexa à release.
+# A tag da release deve ser exatamente a versão do module.json, sem "v" (ex.: 1.2.3).
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir versão e ajustar URL de download
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          VERSION=$(jq -r .version module.json)
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::A tag ($TAG) é diferente da versão do module.json ($VERSION)."
+            exit 1
+          fi
+          if jq -e '.manifest' module.json > /dev/null; then
+            jq --arg d "https://github.com/$REPO/releases/download/$TAG/module.zip" \
+               '.download = $d' module.json > module.tmp && mv module.tmp module.json
+          fi
+
+      - name: Criar module.zip
+        run: |
+          FILES="module.json"
+          for f in README.md CHANGELOG.md LICENSE scripts styles templates lang assets fonts packs; do
+            [ -e "$f" ] && FILES="$FILES $f"
+          done
+          zip -r module.zip $FILES
+
+      - name: Anexar à release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" module.json module.zip --clobber

@@ -1,0 +1,22 @@
+{
+  "party-overview-t20": {
+    "title": "Painel do Grupo",
+    "button": "Painel do Grupo",
+    "characters": "personagens",
+    "refresh": "Atualizar",
+    "empty": "Nenhum personagem do grupo está na cena ativa.",
+    "emptyHint": "Adicione tokens de personagens com jogadores proprietários à cena.",
+    "settings": {
+      "enablePlayerAccess": {
+        "name": "Permitir acesso dos jogadores",
+        "hint": "Permite que jogadores abram o Painel do Grupo pelo Diretório de Atores."
+      }
+    },
+    "inScene": "na cena ativa",
+    "partyHp": "PV do grupo",
+    "partyPm": "PM do grupo",
+    "legendLeader": "Maior valor do grupo",
+    "legendLowHp": "PV em 50% ou menos",
+    "legendHelp": "Clique no nome para abrir a ficha · clique no cabeçalho para ordenar"
+  }
+}

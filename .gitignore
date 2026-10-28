@@ -1,0 +1,17 @@
+# build / entrega
+*.zip
+dist/
+node_modules/
+
+# sistema e editores
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# sobras locais
+*_old.*
+*_orig.*
+*.bak

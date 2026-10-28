@@ -1,0 +1,201 @@
+<div class="pot20-shell">
+  <header class="pot20-toolbar">
+    <div class="pot20-title">
+      <div class="pot20-crest"><i class="fas fa-users"></i></div>
+      <div>
+        <strong>{{localize "party-overview-t20.title"}}</strong>
+        <span><em>{{actorCount}} {{localize "party-overview-t20.characters"}}</em> {{localize "party-overview-t20.inScene"}}</span>
+      </div>
+    </div>
+
+    <div class="pot20-pools">
+      <div class="pot20-pool">
+        <div class="pot20-pool-top"><span>{{localize "party-overview-t20.partyHp"}}</span><b>{{totalHp.value}} <i>/ {{totalHp.max}}</i></b></div>
+        <div class="pot20-bar hp"><span style="width:{{totalHpPercent}}%"></span></div>
+      </div>
+      <div class="pot20-pool">
+        <div class="pot20-pool-top"><span>{{localize "party-overview-t20.partyPm"}}</span><b>{{totalPm.value}} <i>/ {{totalPm.max}}</i></b></div>
+        <div class="pot20-bar pm"><span style="width:{{totalPmPercent}}%"></span></div>
+      </div>
+    </div>
+
+    <div class="pot20-controls">
+      <nav class="pot20-modes">
+        <button type="button" class="{{#if (eq mode 'general')}}active{{/if}}" data-action="mode" data-mode="general">Geral</button>
+        <button type="button" class="{{#if (eq mode 'combat')}}active{{/if}}" data-action="mode" data-mode="combat">Combate</button>
+        <button type="button" class="{{#if (eq mode 'attributes')}}active{{/if}}" data-action="mode" data-mode="attributes">Atributos</button>
+        <button type="button" class="{{#if (eq mode 'skills')}}active{{/if}}" data-action="mode" data-mode="skills">Perícias</button>
+      </nav>
+
+      <button class="pot20-refresh" type="button" data-action="refresh" title="{{localize 'party-overview-t20.refresh'}}">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="pot20-content">
+    {{#if isEmpty}}
+      <div class="pot20-empty">
+        <i class="fas fa-users-slash"></i>
+        <p>{{localize "party-overview-t20.empty"}}</p>
+        <small>{{localize "party-overview-t20.emptyHint"}}</small>
+      </div>
+    {{else}}
+
+      {{#if (eq mode "skills")}}
+        <div class="pot20-skills-grid">
+          <div class="pot20-skills-frozen">
+            <table class="pot20-table pot20-skills-name-table">
+              <thead>
+                <tr>
+                  <th class="name {{#if (eq sortKey 'name')}}sorted{{/if}}" data-action="sort" data-sort="name">Personagem</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each actors}}
+                  <tr>
+                    <td class="name">
+                      <button class="pot20-character" type="button" data-action="openActor" data-actor-id="{{id}}">
+                        <img src="{{img}}" alt="">
+                        <span>{{name}}</span>
+                      </button>
+                    </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pot20-skills-viewport" data-scroll-viewport>
+            <table class="pot20-table pot20-skills-table">
+              <thead>
+                <tr>
+                  {{#each skillColumns}}
+                    <th class="{{#if (eq key ../sortKey)}}sorted{{/if}}" title="{{label}}" data-action="sort" data-sort="{{key}}">{{abbr}}</th>
+                  {{/each}}
+                </tr>
+              </thead>
+              <tbody>
+                {{#each actors}}
+                  <tr>
+                    {{#each skillRows}}
+                      <td class="{{#if leader}}leader{{/if}} {{#if (lt value 0)}}neg{{/if}}">{{value}}{{#if leader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    {{/each}}
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pot20-skills-slider" title="Deslize para navegar pelas perícias">
+          <i class="fas fa-chevron-left"></i>
+          <input type="range" min="0" max="1000" value="0" step="1" data-action="skillScroll" aria-label="Navegar pelas perícias">
+          <i class="fas fa-chevron-right"></i>
+        </div>
+
+      {{else}}
+        <div class="pot20-table-scroll">
+          <table class="pot20-table">
+            <thead>
+              <tr class="groups">
+                <th class="name"></th>
+                <th></th>
+                {{#if (or (eq mode "general") (eq mode "combat"))}}
+                  <th class="g" colspan="2">Recursos</th>
+                  <th class="g" colspan="4">Defesas</th>
+                  <th class="g" colspan="3">Sentidos</th>
+                {{/if}}
+                {{#if (or (eq mode "general") (eq mode "attributes"))}}
+                  <th class="g" colspan="6">Atributos</th>
+                {{/if}}
+              </tr>
+              <tr class="cols">
+                <th class="name {{#if (eq sortKey 'name')}}sorted{{/if}}" data-action="sort" data-sort="name">Personagem</th>
+                <th class="{{#if (eq sortKey 'level')}}sorted{{/if}}" data-action="sort" data-sort="level" title="Nível">NÍV</th>
+
+                {{#if (or (eq mode "general") (eq mode "combat"))}}
+                  <th class="g {{#if (eq sortKey 'hp')}}sorted{{/if}}" data-action="sort" data-sort="hp" title="Pontos de Vida">PV</th>
+                  <th class="{{#if (eq sortKey 'pm')}}sorted{{/if}}" data-action="sort" data-sort="pm" title="Pontos de Mana">PM</th>
+                  <th class="g {{#if (eq sortKey 'defense')}}sorted{{/if}}" data-action="sort" data-sort="defense" title="Defesa">DEF</th>
+                  <th class="{{#if (eq sortKey 'fort')}}sorted{{/if}}" data-action="sort" data-sort="fort" title="Fortitude">FORT</th>
+                  <th class="{{#if (eq sortKey 'reflex')}}sorted{{/if}}" data-action="sort" data-sort="reflex" title="Reflexos">REF</th>
+                  <th class="{{#if (eq sortKey 'will')}}sorted{{/if}}" data-action="sort" data-sort="will" title="Vontade">VON</th>
+                  <th class="g {{#if (eq sortKey 'perception')}}sorted{{/if}}" data-action="sort" data-sort="perception" title="Percepção">PER</th>
+                  <th class="{{#if (eq sortKey 'stealth')}}sorted{{/if}}" data-action="sort" data-sort="stealth" title="Furtividade">FUR</th>
+                  <th class="{{#if (eq sortKey 'speed')}}sorted{{/if}}" data-action="sort" data-sort="speed" title="Deslocamento">DESL</th>
+                {{/if}}
+
+                {{#if (or (eq mode "general") (eq mode "attributes"))}}
+                  <th class="g {{#if (eq sortKey 'for')}}sorted{{/if}}" data-action="sort" data-sort="for" title="Força">FOR</th>
+                  <th class="{{#if (eq sortKey 'des')}}sorted{{/if}}" data-action="sort" data-sort="des" title="Destreza">DES</th>
+                  <th class="{{#if (eq sortKey 'con')}}sorted{{/if}}" data-action="sort" data-sort="con" title="Constituição">CON</th>
+                  <th class="{{#if (eq sortKey 'int')}}sorted{{/if}}" data-action="sort" data-sort="int" title="Inteligência">INT</th>
+                  <th class="{{#if (eq sortKey 'sab')}}sorted{{/if}}" data-action="sort" data-sort="sab" title="Sabedoria">SAB</th>
+                  <th class="{{#if (eq sortKey 'car')}}sorted{{/if}}" data-action="sort" data-sort="car" title="Carisma">CAR</th>
+                {{/if}}
+              </tr>
+            </thead>
+
+            <tbody>
+              {{#each actors}}
+                <tr>
+                  <td class="name">
+                    <button class="pot20-character" type="button" data-action="openActor" data-actor-id="{{id}}">
+                      <img src="{{img}}" alt="">
+                      <span>{{name}}</span>
+                    </button>
+                  </td>
+
+                  <td class="{{#if levelLeader}}leader{{/if}}"><span class="pot20-level">{{level}}</span></td>
+
+                  {{#if (or (eq ../mode "general") (eq ../mode "combat"))}}
+                    <td class="g {{#if hpLeader}}leader{{/if}}">
+                      <div class="pot20-res {{#if hpLow}}low{{/if}} {{#unless hp.value}}empty{{/unless}}">
+                        <div class="v"><b>{{hp.value}}</b><span>/ {{hp.max}}</span></div>
+                        <div class="pot20-bar hp"><span style="width:{{hpPercent}}%"></span></div>
+                      </div>
+                    </td>
+                    <td class="{{#if pmLeader}}leader{{/if}}">
+                      <div class="pot20-res {{#unless pm.value}}empty{{/unless}}">
+                        <div class="v"><b>{{pm.value}}</b><span>/ {{pm.max}}</span></div>
+                        <div class="pot20-bar pm"><span style="width:{{pmPercent}}%"></span></div>
+                      </div>
+                    </td>
+                    <td class="g {{#if defenseLeader}}leader{{/if}}"><span class="pot20-def">{{defense}}</span></td>
+                    <td class="{{#if fortLeader}}leader{{/if}} {{#if (lt fort 0)}}neg{{/if}}">{{fort}}{{#if fortLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if reflexLeader}}leader{{/if}} {{#if (lt reflex 0)}}neg{{/if}}">{{reflex}}{{#if reflexLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if willLeader}}leader{{/if}} {{#if (lt will 0)}}neg{{/if}}">{{will}}{{#if willLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="g {{#if perceptionLeader}}leader{{/if}} {{#if (lt perception 0)}}neg{{/if}}">{{perception}}{{#if perceptionLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if stealthLeader}}leader{{/if}} {{#if (lt stealth 0)}}neg{{/if}}">{{stealth}}{{#if stealthLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if speedLeader}}leader{{/if}}">{{speedLabel}}<small class="unit"> m</small>{{#if speedLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                  {{/if}}
+
+                  {{#if (or (eq ../mode "general") (eq ../mode "attributes"))}}
+                    <td class="g {{#if forLeader}}leader{{/if}} {{#if (lt for 0)}}neg{{/if}}">{{for}}{{#if forLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if desLeader}}leader{{/if}} {{#if (lt des 0)}}neg{{/if}}">{{des}}{{#if desLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if conLeader}}leader{{/if}} {{#if (lt con 0)}}neg{{/if}}">{{con}}{{#if conLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if intLeader}}leader{{/if}} {{#if (lt int 0)}}neg{{/if}}">{{int}}{{#if intLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if sabLeader}}leader{{/if}} {{#if (lt sab 0)}}neg{{/if}}">{{sab}}{{#if sabLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                    <td class="{{#if carLeader}}leader{{/if}} {{#if (lt car 0)}}neg{{/if}}">{{car}}{{#if carLeader}}<i class="pot20-mark"></i>{{/if}}</td>
+                  {{/if}}
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/if}}
+
+      <div class="pot20-legend">
+        <span><i class="pot20-mark"></i> {{localize "party-overview-t20.legendLeader"}}</span>
+        <span><i class="pot20-swatch"></i> {{localize "party-overview-t20.legendLowHp"}}</span>
+        <span>{{localize "party-overview-t20.legendHelp"}}</span>
+      </div>
+    {{/if}}
+  </div>
+
+  <footer class="pot20-footer">
+    <span>Tormenta20 · Foundry VTT v13</span>
+    <b>v{{moduleVersion}}</b>
+  </footer>
+</div>
